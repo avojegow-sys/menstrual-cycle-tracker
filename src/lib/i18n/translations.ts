@@ -96,6 +96,8 @@ export const en = {
   "auth.noPassword": "No password — just one tap in your inbox.",
   "auth.loading": "Loading…",
   "auth.signOut": "Sign out",
+  "auth.signInWithGoogle": "Sign in with Google",
+  "auth.orEmail": "or with email",
 
   // Sync status
   "sync.syncing": "Syncing…",
@@ -190,6 +192,8 @@ export const ru: Record<TranslationKey, string> = {
   "auth.noPassword": "Без пароля — один тап в письме.",
   "auth.loading": "Загрузка…",
   "auth.signOut": "Выйти",
+  "auth.signInWithGoogle": "Войти через Google",
+  "auth.orEmail": "или по email",
 
   "sync.syncing": "Синхронизация…",
   "sync.error": "Офлайн — изменения сохранены на устройстве",
