@@ -17,8 +17,8 @@ interface AuthContextValue {
   status: AuthStatus;
   configured: boolean;
   user: User | null;
-  /** Send a magic link to the given email. Throws on failure. */
   signInWithEmail: (email: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -26,7 +26,6 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
-  // If Supabase isn't configured there's nothing to wait for.
   const [status, setStatus] = useState<AuthStatus>(
     isSupabaseConfigured ? "loading" : "unauthenticated"
   );
@@ -58,9 +57,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        // Magic link returns to the app; supabase-js then establishes the
-        // session automatically (detectSessionInUrl).
         emailRedirectTo:
+          typeof window !== "undefined" ? window.location.origin : undefined,
+      },
+    });
+    if (error) throw error;
+  }, []);
+
+  const signInWithGoogle = useCallback(async () => {
+    if (!supabase) throw new Error("not-configured");
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo:
           typeof window !== "undefined" ? window.location.origin : undefined,
       },
     });
@@ -78,9 +87,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       configured: isSupabaseConfigured,
       user: session?.user ?? null,
       signInWithEmail,
+      signInWithGoogle,
       signOut,
     }),
-    [status, session, signInWithEmail, signOut]
+    [status, session, signInWithEmail, signInWithGoogle, signOut]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
