@@ -26,7 +26,15 @@ export default function LoginScreen() {
     try {
       await signInWithEmail(value);
       setPhase("sent");
-    } catch {
+    } catch (e) {
+      console.error("Supabase auth error:", e);
+
+      if (e instanceof Error) {
+        alert(e.message);
+      } else {
+        alert(JSON.stringify(e, null, 2));
+      }
+
       setPhase("idle");
       setError(t("auth.sendError"));
     }
